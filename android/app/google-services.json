@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "620012359691",
+    "project_id": "alikay-shop",
+    "storage_bucket": "alikay-shop.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:620012359691:android:3ef8ec5df6c0dff273770e",
+        "android_client_info": {
+          "package_name": "com.example.alikay_shop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCe6zM-5CnYYEPAw_9amujlZPR9iGkjfB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
