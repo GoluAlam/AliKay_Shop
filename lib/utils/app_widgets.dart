@@ -102,7 +102,6 @@ class AppWidgets {
       ],
     );
   }
-
    bottomSheet({required BuildContext context,required Widget child}) {
     return showModalBottomSheet(
       context: context,
@@ -111,56 +110,22 @@ class AppWidgets {
       },
     );
   }
+  Widget category(String text,{required void Function()? onTap,Widget? child,ImageProvider<Object>? backgroundImage,double? radius}){
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          CircleAvatar(
+            backgroundImage: backgroundImage,
+            radius: radius,
+            child: child,
+          ),
+          Text(text)
+        ],
+      ),
+    );
+  }
 
-  // Widget popUpMenuButton({void Function(int)? onSelected,}){
-  //   return Column(
-  //     children: [
-  //       PopupMenuButton<int>(
-  //         itemBuilder: (context) => [
-  //           // PopupMenuItem 1
-  //           PopupMenuItem(
-  //             value: 1,
-  //             // row with 2 children
-  //             child: Row(
-  //               children: [
-  //                 Icon(Icons.star),
-  //                 SizedBox(
-  //                   width: 10,
-  //                 ),
-  //                 Text("Get The App")
-  //               ],
-  //             ),
-  //           ),
-  //           // PopupMenuItem 2
-  //           PopupMenuItem(
-  //             value: 2,
-  //             // row with two children
-  //             child: Row(
-  //               children: [
-  //                 Icon(Icons.chrome_reader_mode),
-  //                 SizedBox(
-  //                   width: 10,
-  //                 ),
-  //                 Text("About")
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //         offset: Offset(0, 100),
-  //         color: Colors.grey,
-  //         elevation: 2,
-  //         onSelected: onSelected
-  //         //     (value) {
-  //         //   if (value == 1) {
-  //         //   } else if (value == 2) {
-  //         //   }
-  //         // },
-  //       ),
-  //
-  //     ],
-  //
-  //   );
-  // }
 
 
 

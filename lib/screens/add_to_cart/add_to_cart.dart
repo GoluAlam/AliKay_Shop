@@ -100,116 +100,112 @@ class _AddToCartState extends State<AddToCart> {
   Widget build(BuildContext context) {
     var view = AppWidgets();
     return Scaffold(
-      body: DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              'Add To Cart',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-          ),
-          body: FutureBuilder(
-            future: FirebaseFirestore.instance.collection('addToCart').get(),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return const Text('Something went wrong');
-              }
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return ListView.builder(
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                   data = snapshot.data!.docs[index];
-                  return Card(
-                    child: Column(
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        title: const Text(
+          'Add To Cart',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      body: FutureBuilder(
+        future: FirebaseFirestore.instance.collection('addToCart').get(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Text('Something went wrong');
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              data = snapshot.data!.docs[index];
+              return Card(
+                child: Column(
+                  children: [
+                    Image.network(
+                      data['productsImage'] ?? "Null Data",
+                      width: 350,
+                      height: 300,
+                      fit: BoxFit.cover,
+                    ),
+                    Text(data['productsName'] ?? "Null Data"),
+                    Text(data['productsPrice'] ?? "Null Data"),
+                    Text(data['productsSize'] ?? "Null Data"),
+                    Text(data['productsType'] ?? "Null Data"),
+                    Text(data['productsFabric'] ?? "Null Data"),
+                    Text(data['addCartId'] ?? "Null Data"),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Image.network(
-                          data['productsImage'] ?? "Null Data",
-                          width: 350,
-                          height: 300,
-                          fit: BoxFit.cover,
-                        ),
-                        Text(data['productsName'] ?? "Null Data"),
-                        Text(data['productsPrice'] ?? "Null Data"),
-                        Text(data['productsSize'] ?? "Null Data"),
-                        Text(data['productsType'] ?? "Null Data"),
-                        Text(data['productsFabric'] ?? "Null Data"),
-                        Text(data['addCartId'] ?? "Null Data"),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            view.elevatedButton('Remove', onPressed: () {
-                              _addToCartController.removeToCart(data['addCartId']);
-                            }),
-                            view.elevatedButton('Buy now', onPressed: () {
-                              view.bottomSheet(
-                                context: context,
-                                child: SingleChildScrollView(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: [
-                                        view.sizedBox(height: 25),
-                                        view.textFormField(
-                                          controller: TextEditingController(
-                                              text: data['productsName'] ?? ""),
-                                          labelText: 'Products Desc',
-                                          enabled: false,
-                                        ),
-                                        view.sizedBox(height: 15),
-                                        view.textFormField(
-                                          controller: TextEditingController(
-                                              text: data['productsPrice']),
-                                          labelText: 'Products Price',
-                                          enabled: false,
-                                        ),
-                                        view.sizedBox(height: 15),
-                                        view.textFormField(
-                                          controller: TextEditingController(
-                                              text: data['productsFabric']),
-                                          labelText: 'Products Fabric',
-                                          enabled: false,
-                                        ),
-                                        view.sizedBox(height: 15),
-                                        view.textFormField(
-                                          controller: TextEditingController(
-                                              text: data['productsSize']),
-                                          labelText: 'Products Size',
-                                          enabled: false,
-                                        ),
-                                        view.sizedBox(height: 15),
-                                        view.textFormField(
-                                          controller: TextEditingController(
-                                              text: data['productsType']),
-                                          labelText: 'Products Type',
-                                          enabled: false,
-                                        ),
-                                        view.sizedBox(height: 35),
-                                        view.elevatedButton('Buy Now',
-                                            onPressed: () {
-                                          payOrderAmount(TextEditingController(
-                                              text: data['productsPrice']));
-                                        }),
-                                        view.sizedBox(height: 35),
-                                      ],
+                        view.elevatedButton('Remove', onPressed: () {
+                          _addToCartController.removeToCart(data['addCartId']);
+                        }),
+                        view.elevatedButton('Buy now', onPressed: () {
+                          view.bottomSheet(
+                            context: context,
+                            child: SingleChildScrollView(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    view.sizedBox(height: 25),
+                                    view.textFormField(
+                                      controller: TextEditingController(
+                                          text: data['productsName'] ?? ""),
+                                      labelText: 'Products Desc',
+                                      enabled: false,
                                     ),
-                                  ),
+                                    view.sizedBox(height: 15),
+                                    view.textFormField(
+                                      controller: TextEditingController(
+                                          text: data['productsPrice']),
+                                      labelText: 'Products Price',
+                                      enabled: false,
+                                    ),
+                                    view.sizedBox(height: 15),
+                                    view.textFormField(
+                                      controller: TextEditingController(
+                                          text: data['productsFabric']),
+                                      labelText: 'Products Fabric',
+                                      enabled: false,
+                                    ),
+                                    view.sizedBox(height: 15),
+                                    view.textFormField(
+                                      controller: TextEditingController(
+                                          text: data['productsSize']),
+                                      labelText: 'Products Size',
+                                      enabled: false,
+                                    ),
+                                    view.sizedBox(height: 15),
+                                    view.textFormField(
+                                      controller: TextEditingController(
+                                          text: data['productsType']),
+                                      labelText: 'Products Type',
+                                      enabled: false,
+                                    ),
+                                    view.sizedBox(height: 35),
+                                    view.elevatedButton('Buy Now',
+                                        onPressed: () {
+                                      payOrderAmount(TextEditingController(
+                                          text: data['productsPrice']));
+                                    }),
+                                    view.sizedBox(height: 35),
+                                  ],
                                 ),
-                              );
-                            }),
-                          ],
-                        ),
+                              ),
+                            ),
+                          );
+                        }),
                       ],
                     ),
-                  );
-                },
+                  ],
+                ),
               );
             },
-          ),
-        ),
+          );
+        },
       ),
     );
   }

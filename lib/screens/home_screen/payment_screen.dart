@@ -133,18 +133,30 @@ class _PaymentScreenState extends State<PaymentScreen> {
              Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Icon(Icons.share),
+                IconButton(onPressed: (){}, icon: Icon(Icons.share)),
                 IconButton(
                   onPressed: () {
                     setState(() {
                       isFavorite = !isFavorite;
-
                     });
                   },
-                  icon: Icon(
-                    isFavorite ? Icons.favorite  : Icons.favorite_border,
-                    color: isFavorite ? Colors.red : null,
-                  ),
+                  icon: isFavorite ? InkWell(
+                    onTap: (){
+                      setState(() {
+                        isFavorite = !isFavorite;
+
+                      });
+                    },
+                      child: const Icon(Icons.favorite,color: Colors.red,))
+
+                      : InkWell(
+                    onTap: (){
+                      setState(() {
+                        isFavorite = !isFavorite;
+
+                      });
+                    },
+                      child: const Icon(Icons.favorite_border))
                 )
 
               ],
