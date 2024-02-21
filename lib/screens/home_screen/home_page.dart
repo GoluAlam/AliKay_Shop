@@ -32,20 +32,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(title: const Text("AliKay",style: TextStyle(color: Colors.white),),backgroundColor: Colors.blue),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.upload),
-              title: const Text("Upload"),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Updates(),));
-              },
-            ),
-          ],
-        )
-      ),
+
       body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
