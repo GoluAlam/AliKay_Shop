@@ -52,7 +52,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
              Row(
                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                children: [
-                 view.category('Earbuds',backgroundImage: const AssetImage('assets/category/furnitures.jpg'),radius: 30, onTap: () {  }),
+                 view.category('Earbuds',backgroundImage: const AssetImage('assets/category/furnitures.jpg'),radius: 30, onTap: () {}),
                  view.category('Shoes',backgroundImage: const AssetImage('assets/category/toyandbaby.jpg'),radius: 30, onTap: () {  }),
                  view.category('Watches',backgroundImage: const AssetImage('assets/category/medicines.jpg'),radius: 30, onTap: () {  }),
                ],

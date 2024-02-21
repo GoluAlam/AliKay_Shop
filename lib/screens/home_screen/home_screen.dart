@@ -2,6 +2,7 @@ import 'package:alikay_shop/screens/home_screen/payment_screen.dart';
 import 'package:alikay_shop/utils/app_widgets.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../upload_data_firebase/upload.dart';
 
@@ -82,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       return const Text('Something went wrong');
                     }
                     if(snapshot.connectionState == ConnectionState.waiting){
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(child: CupertinoActivityIndicator(),);
                     }
                     return SizedBox(
                       height: 250,
@@ -132,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     return const Text('Something went wrong');
                   }
                   if(snapshot.connectionState == ConnectionState.waiting){
-                    return const Center(child: CircularProgressIndicator(),);
+                    return const Center(child: CupertinoActivityIndicator(),);
                   }
                   return SizedBox(
                     height: 250,
@@ -158,6 +159,41 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 },),
+              FutureBuilder(
+                future: FirebaseFirestore.instance.collection('allProducts').where('CategoryName', isEqualTo: 'earbuds').get(),
+                builder: (context, snapshot) {
+                  if(snapshot.hasError){
+                    return const Text('Something went wrong');
+                  }
+                  if(snapshot.connectionState == ConnectionState.waiting){
+                    return const Center(child: CupertinoActivityIndicator(),);
+                  }
+                  return SizedBox(
+                    height: 250,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      shrinkWrap: true,
+                      itemCount: snapshot.data?.docs.length,
+                      itemBuilder: (context, index) {
+                        var data = snapshot.data?.docs[index];
+                        return Card(
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                  width: 150,
+                                  height: 180,
+                                  child: Image.network(data?['productsImage'] ?? "Image Null",fit: BoxFit.cover,)),
+                              Text(data?['productsName'] ?? "Name Null"),
+                              Text(data?['productsPrice'] ?? "Price Null"),
+                            ],
+                          ),
+                        );
+
+                      },
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ],
