@@ -55,7 +55,7 @@ class _OTPVerificationState extends State<OTPVerification> {
 
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HomePage(title: '')),
+                      MaterialPageRoute(builder: (context) => HomePage()),
                     );
                   } catch (ex) {
                     log(ex.toString());

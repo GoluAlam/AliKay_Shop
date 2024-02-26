@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../upload_data_firebase/upload.dart';
 import '../account_screens/account_screen.dart';
 import '../add_to_cart/add_to_cart.dart';
 import '../category_screens/category_screen.dart';
 import 'home_screen.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required String title});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();

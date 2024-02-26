@@ -22,98 +22,72 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Form(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 100),
-                child: Center(
-                  child: Container(
-                    width: 150,
-                    height: 100,
-                    child: Image.asset('assets/images/app_logo.jpeg'),
-                  ),
+      appBar: AppBar(
+        title: Text('SignIn',style: TextStyle(fontWeight: FontWeight.bold),),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Form(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 10, bottom: 20, left: 10),
+                  child: TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return ('Please enter your email');
+                        }
+                        else if (emailRegex.hasMatch(value)){
+                          return ('Please enter a valid email address');
+                        }
+                        return null;
+                      },
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                          labelText: 'Enter Your Email',
+                          prefixIcon: Icon(Icons.email, color: Colors.grey),
+                          errorStyle: TextStyle(fontSize: 13.0),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(9.0))))),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20, bottom: 30),
-                child: Center(
-                  child: Container(
-                    child: const Text("Sign In",
-                        style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.lightBlue)),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 10, bottom: 20, left: 10),
-                child: TextFormField(
+                Padding(
+                  padding: const EdgeInsets.only(right: 10, bottom: 20, left: 10),
+                  child: TextFormField(
                     validator: (value) {
-                      if (value!.isEmpty) {
-                        return ('Please enter your email');
-                      }
-                      else if (emailRegex.hasMatch(value)){
-                        return ('Please enter a valid email address');
+                      if ( value == null || value.isEmpty) {
+                        return ('Please enter your password');
                       }
                       return null;
                     },
-                    controller: emailController,
-                    keyboardType: TextInputType.emailAddress,
+                    controller: passwordController,
+                    keyboardType: TextInputType.visiblePassword,
                     decoration: const InputDecoration(
-                        labelText: 'Enter Your Email',
-                        prefixIcon: Icon(Icons.email, color: Colors.grey),
-                        errorStyle: TextStyle(fontSize: 13.0),
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(9.0))))),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 10, bottom: 20, left: 10),
-                child: TextFormField(
-                  validator: (value) {
-                    if ( value == null || value.isEmpty) {
-                      return ('Please enter your password');
-                    }
-                    return null;
-                  },
-                  controller: passwordController,
-                  keyboardType: TextInputType.visiblePassword,
-                  decoration: const InputDecoration(
-                    labelText: 'Enter Your Password',
-                    prefixIcon: Icon(Icons.password, color: Colors.grey),
-                    errorStyle: TextStyle(fontSize: 18.0),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
-                        borderRadius: BorderRadius.all(Radius.circular(9.0))),
-                  ),
-                ),
-              ),
-              Container(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Container(
-                      child: FloatingActionButton.extended(
-                        onPressed: () {
-                          SignIn();
-                        },
-                        label: const Text('Sign In'),
-                      ),
-                      width: MediaQuery.of(context).size.width,
-                      height: 50,
+                      labelText: 'Enter Your Password',
+                      prefixIcon: Icon(Icons.password, color: Colors.grey),
+                      errorStyle: TextStyle(fontSize: 18.0),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.all(Radius.circular(9.0))),
                     ),
                   ),
                 ),
-              ),
-              TextButton(onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage(title: '',),));
+                ElevatedButton(onPressed: (){SignIn();}, child: const Text('Sign In')),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Don't have an account?"),
+                    TextButton(onPressed: () {
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const SignUpPage(),));
 
-              }, child: Text('Create New Account'))
-            ],
+                    }, child: const Text("Sign Up")),
+
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -138,13 +112,7 @@ class _SignInPageState extends State<SignInPage> {
         fontSize: 16.0,
       );
 
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomePage(
-              title: '',
-            ),
-          ));
+      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => const HomePage(),));
 
     } catch (e) {
       print('Failed to Logged in : ${e}');

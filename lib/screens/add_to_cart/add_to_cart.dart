@@ -1,10 +1,11 @@
-import 'package:alikay_shop/controller/add_to_cart_controller.dart';
 import 'package:alikay_shop/utils/app_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
-import '../../controller/order_controller.dart';
+import '../../controller/user_add_to_cart_controller.dart';
+import '../../controller/user_order_controller.dart';
 import '../../data_models/order_data_model.dart';
 
 class AddToCart extends StatefulWidget {
@@ -17,9 +18,10 @@ class AddToCart extends StatefulWidget {
 class _AddToCartState extends State<AddToCart> {
   var data;
 
-  final AddToCartController _addToCartController = AddToCartController();
   final Razorpay _razorPay = Razorpay();
-  final OrderController _orderController = OrderController();
+  final _currentUserId = FirebaseAuth.instance.currentUser?.uid;
+  final UserOrdersController _userOrdersController = UserOrdersController();
+  final UserAddToCartController _userAddToCartController = UserAddToCartController();
 
   TextEditingController productsName = TextEditingController();
   TextEditingController productsPrice = TextEditingController();
@@ -34,22 +36,20 @@ class _AddToCartState extends State<AddToCart> {
     _razorPay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorPay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
   }
-
   @override
   void dispose() {
     _razorPay.clear();
     super.dispose();
   }
-
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     print('Payment Successfully');
     Fluttertoast.showToast(
-      msg: 'Payment Successfully',
+      msg: 'Payment Successfully by Add To Cart',
       gravity: ToastGravity.BOTTOM_LEFT,
       fontSize: 40,
       textColor: Colors.green,
     );
-    _orderController.orderPaymentDetails(OrderDataModel(
+    _userOrdersController.orderPaymentDetails(OrderDataModel(
       paymentAmount: data['productsPrice'],
       productsImage: data['productsImage'],
       productsName: data['productsName'],
@@ -59,7 +59,6 @@ class _AddToCartState extends State<AddToCart> {
       productsType: data['productsType'],
     ));
   }
-
   void _handlePaymentError(PaymentFailureResponse response) {
     print('Payment failed');
     Fluttertoast.showToast(
@@ -69,7 +68,6 @@ class _AddToCartState extends State<AddToCart> {
       textColor: Colors.red,
     );
   }
-
   void _handleExternalWallet(ExternalWalletResponse response) {
     print('Payment Successfully with Wallet');
     Fluttertoast.showToast(
@@ -79,7 +77,6 @@ class _AddToCartState extends State<AddToCart> {
       textColor: Colors.green,
     );
   }
-
   void payOrderAmount(amount) {
     var options = {
       'key': 'rzp_test_8q9EoCx5zdsxNX',
@@ -108,8 +105,8 @@ class _AddToCartState extends State<AddToCart> {
         ),
         centerTitle: true,
       ),
-      body: FutureBuilder(
-        future: FirebaseFirestore.instance.collection('addToCart').get(),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('UserAddToCart').doc(_currentUserId).collection('addToCart').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Text('Something went wrong');
@@ -120,7 +117,7 @@ class _AddToCartState extends State<AddToCart> {
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
-              data = snapshot.data!.docs[index];
+              data = snapshot.data!.docs[index].data();
               return Card(
                 child: Column(
                   children: [
@@ -140,7 +137,7 @@ class _AddToCartState extends State<AddToCart> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         view.elevatedButton('Remove', onPressed: () {
-                          _addToCartController.removeToCart(data['addCartId']);
+                          _userAddToCartController.removeToCart(data['addCartId']);
                         }),
                         view.elevatedButton('Buy now', onPressed: () {
                           view.bottomSheet(

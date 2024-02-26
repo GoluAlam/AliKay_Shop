@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'package:alikay_shop/screens/splash_screen/welome_screen.dart';
+import 'package:alikay_shop/utils/app_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../auths/email_auth/sign_up_page.dart';
+import 'package:lottie/lottie.dart';
+
 import '../home_screen/home_page.dart';
-// import '../home_screen/home_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -16,24 +18,16 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus();
+    navigateUser();
   }
 
-  void _checkLoginStatus() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    await Future.delayed(Duration(seconds: 5));
-
-    setState(() {
+  void navigateUser() {
+    Timer(const Duration(seconds: 5), () {
+      User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => HomePage(title: '')));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()),);
       } else {
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => SignUpPage(
-                      title: '',
-                    )));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  const WelcomeScreen()),);
       }
     });
   }
@@ -41,15 +35,9 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-          width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/img.png'),
-          fit: BoxFit.cover,
-        ),
+      body: Center(
+        child: Lottie.asset('${AppConstants.assetsAnimations}alikay_shop_splash_screen.json'),
       ),
-    ));
+    );
   }
 }

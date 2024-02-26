@@ -6,12 +6,9 @@ import 'package:alikay_shop/utils/app_widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import '../../home_screen/home_page.dart';
-import '../phone_auth/number_verification.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key, required String title});
+  const SignUpPage({super.key});
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -19,33 +16,6 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
 
-  final GoogleSignIn googleSignIn = GoogleSignIn();
-  Future<void> signInWithGoogle(BuildContext context) async {
-    try {
-      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
-
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
-        final AuthCredential authCredential = GoogleAuthProvider.credential(
-          idToken: googleSignInAuthentication.idToken,
-          accessToken: googleSignInAuthentication.accessToken,
-        );
-
-        UserCredential result = await _auth.signInWithCredential(authCredential);
-        User? user = result.user;
-
-        if (user != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomePage(title: '')),
-          );
-        }
-      }
-    } catch (e) {
-      print('Error during Google Sign-In: $e');
-      // Handle the error accordingly (show a message, log, etc.)
-    }
-  }
   final FirebaseAuth _auth = FirebaseAuth.instance;
   TextEditingController nameController = TextEditingController();
   TextEditingController numberController = TextEditingController();
@@ -56,97 +26,93 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     var view = AppWidgets();
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      appBar: view.appBarView(
+        title: const Text('Create Account',style: TextStyle(fontWeight: FontWeight.bold),)
+      ),
+      body: Center(
         child: SingleChildScrollView(
-          child: Form(
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(top: 100, bottom: 30),
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Text("Create",
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,)),
-                        Text('Account')
-                      ],
-                    )
+          child: Padding(
+            padding: const EdgeInsets.only(top: 38.0,left: 10,right: 10),
+            child: Form(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  view.textFormField(
+                    controller: nameController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return ('Please enter your name');
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.name,
+                    prefixIcon: const Icon(
+                      Icons.person,
+                      color: Colors.grey,
+                    ),
+                    labelText: 'Enter Your Name'
                   ),
-                ),
-                view.textFormField(
-                  controller: nameController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return ('Please enter your name');
-                    }
-                    return null;
-                  },
-                  keyboardType: TextInputType.name,
-                  prefixIcon: const Icon(
-                    Icons.person,
-                    color: Colors.grey,
+                  view.sizedBox(height: 15),
+                  view.textFormField(
+                    controller: numberController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return ('Please enter your number');
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.number,
+                    prefixIcon: const Icon(Icons.phone, color: Colors.grey),
+                    labelText: 'Enter Mobile Number',
                   ),
-                  labelText: 'Enter Your Name'
-                ),
-                view.sizedBox(height: 15),
-                view.textFormField(
-                  controller: numberController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return ('Please enter your number');
-                    }
-                    return null;
-                  },
-                  keyboardType: TextInputType.number,
-                  prefixIcon: const Icon(Icons.phone, color: Colors.grey),
-                  labelText: 'Enter Mobile Number',
-                ),
-                view.sizedBox(height: 15),
-                view.textFormField(
-                  controller: emailController,
-                  validator: (value) {
-                    final emailRegex = RegExp(
-                        r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
-                    if (value!.isEmpty) {
-                      return ('Please enter your email');
-                    } else if (emailRegex.hasMatch(value)) {
-                      return ('Please enter a valid email address');
-                    }
-                    return null;
-                  },
-                  keyboardType: TextInputType.emailAddress,
-                  prefixIcon: const Icon(Icons.email, color: Colors.grey),
-                  labelText: 'Enter Your Email',
-                ),
-                view.sizedBox(height: 15),
-                view.textFormField(
-                  controller: passwordController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return ('Please enter your password');
-                    }
-                    if (value.length < 8) {
-                      return 'Password must be at least 8 characters long';
-                    }
-                    return null;
-                  },
-                  keyboardType: TextInputType.visiblePassword,
-                  prefixIcon: const Icon(Icons.lock, color: Colors.grey),
-                  labelText: 'Enter Your Password',
-                ),
-                view.sizedBox(height: 35),
-                view.elevatedButton('Sign up', onPressed: (){signUp();}),
-                view.sizedBox(height: 35),
-                view.signInWith("Sign In with Google",onPressed: () {signInWithGoogle(context);}, image: const AssetImage('assets/images/google.png'),),
-                view.sizedBox(height: 10),
-                view.signInWith("Sign In with Number",onPressed: (){view.nextScreenPush(context: context, screen: const NumberVerification());}, image: const AssetImage('assets/images/mobile.png'),),
-                view.textButton('All ready have an account', onPressed: (){
-                  view.nextScreenPushReplacement(context: context, screen: const SignInPage());
-                })
-              ],
+                  view.sizedBox(height: 15),
+                  view.textFormField(
+                    controller: emailController,
+                    validator: (value) {
+                      final emailRegex = RegExp(
+                          r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+                      if (value!.isEmpty) {
+                        return ('Please enter your email');
+                      } else if (emailRegex.hasMatch(value)) {
+                        return ('Please enter a valid email address');
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.emailAddress,
+                    prefixIcon: const Icon(Icons.email, color: Colors.grey),
+                    labelText: 'Enter Your Email',
+                  ),
+                  view.sizedBox(height: 15),
+                  view.textFormField(
+                    controller: passwordController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return ('Please enter your password');
+                      }
+                      if (value.length < 8) {
+                        return 'Password must be at least 8 characters long';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.visiblePassword,
+                    prefixIcon: const Icon(Icons.lock, color: Colors.grey),
+                    labelText: 'Enter Your Password',
+                  ),
+                  view.sizedBox(height: 35),
+                  view.elevatedButton('Sign up', onPressed: (){signUp();}),
+                  view.sizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('All ready have an account?'),
+                      view.textButton('Sign In', onPressed: (){
+                        view.nextScreenPushReplacement(context: context, screen: const SignInPage());
+                      }),
+
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -166,7 +132,7 @@ class _SignUpPageState extends State<SignUpPage> {
             var a  = value.user?.uid.toString();
             if(value.user != null){
                UserController().addUsersDetails(UsersDetailsDataModel(userId: a,userName: name,userEmail: email,userPhoneNumber: number));
-               Navigator.push(context, MaterialPageRoute(builder: (context) => SignInPage()),);
+               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const SignInPage()),);
             }
             else{
               Fluttertoast.showToast(

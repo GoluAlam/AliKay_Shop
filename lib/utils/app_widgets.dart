@@ -28,15 +28,19 @@ class AppWidgets {
       child: child,
     );
   }
-  Widget textFormField({String? Function(String?)? validator,TextEditingController? controller,TextInputType? keyboardType,String? labelText,Widget? prefixIcon,bool? enabled}) {
+  Widget textFormField({void Function()? onTap, String? Function(String?)? validator,TextEditingController? controller,TextInputType? keyboardType,String? labelText,Widget? prefixIcon,bool? enabled,Color? cursorColor,Widget? suffixIcon,bool obscureText = false}) {
     return TextFormField(
       validator: validator,
       controller: controller,
+      onTap: onTap,
       keyboardType: keyboardType,
       enabled: enabled,
+      cursorColor: cursorColor,
+      obscureText: obscureText,
       decoration: InputDecoration(
           labelText: labelText,
           prefixIcon: prefixIcon,
+          suffixIcon: suffixIcon,
           errorStyle: TextStyle(fontSize: 13.0),
           border: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.red),
@@ -125,6 +129,68 @@ class AppWidgets {
       ),
     );
   }
+
+  PreferredSizeWidget? appBarView({
+    Widget? title,
+    Color? backgroundColor,
+    double? elevation,
+    bool? centerTitle,
+    Widget? leading,
+    double? titleSpacing,
+    PreferredSizeWidget? bottom,
+    ShapeBorder? shape,
+    Widget? flexibleSpace,
+    TextStyle? titleTextStyle,
+    double? toolbarHeight
+  }){
+    return AppBar(
+      title: title,
+      backgroundColor: backgroundColor,
+      elevation: elevation,
+      centerTitle: centerTitle,
+      leading: leading,
+      titleSpacing: titleSpacing,
+      bottom: bottom,
+      shape: shape,
+      flexibleSpace: flexibleSpace,
+      actions: [],
+      titleTextStyle: titleTextStyle,
+      toolbarHeight: toolbarHeight,
+
+
+    );
+  }
+
+  Widget material({double? width,double? height,Color? color,required void Function()? onPressed,required Widget icon,required Widget label}){
+    return Material(
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(30)
+        ),
+        child: TextButton.icon(onPressed: onPressed, icon: icon, label: label),
+      ),
+
+    );
+  }
+
+ Widget simpleContainer({Widget? child,double? height,double? width,AlignmentGeometry? alignment,
+   EdgeInsetsGeometry? margin,Color? color,EdgeInsetsGeometry? padding,Decoration? decoration}){
+    return Container(
+      height: height,
+      width: width,
+      alignment: alignment,
+      margin: margin,
+      color: color,
+      padding: padding,
+      decoration: decoration,
+      child: child,
+
+    );
+ }
+
 
 
 

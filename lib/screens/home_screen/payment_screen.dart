@@ -1,5 +1,7 @@
-import 'package:alikay_shop/controller/add_to_cart_controller.dart';
-import 'package:alikay_shop/controller/order_controller.dart';
+import 'package:alikay_shop/controller/user_add_to_cart_controller.dart';
+import 'package:alikay_shop/controller/user_favorite_list_controller.dart';
+import 'package:alikay_shop/controller/user_order_controller.dart';
+import 'package:alikay_shop/data_models/add_into_favorite.dart';
 import 'package:alikay_shop/data_models/add_to_cart_data_model.dart';
 import 'package:alikay_shop/data_models/order_data_model.dart';
 import 'package:alikay_shop/utils/app_widgets.dart';
@@ -16,9 +18,12 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
-  bool isFavorite = false ;
-  final OrderController _orderController = OrderController();
-  final AddToCartController _addToCartController = AddToCartController();
+  bool isFavorite = false;
+  final UserAddToCartController _userAddToCartController =
+  UserAddToCartController();
+  final UserOrdersController _userOrdersController = UserOrdersController();
+  final UserFavoriteListController _userFavoriteListController =
+  UserFavoriteListController();
   final Razorpay _razorPay = Razorpay();
   TextEditingController orderNameController = TextEditingController();
   TextEditingController orderPriceController = TextEditingController();
@@ -39,11 +44,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
     _razorPay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorPay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
   }
+
   @override
   void dispose() {
     _razorPay.clear();
     super.dispose();
   }
+
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     print('Payment Successfully');
     Fluttertoast.showToast(
@@ -52,7 +59,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       fontSize: 40,
       textColor: Colors.green,
     );
-    _orderController.orderPaymentDetails(OrderDataModel(
+    _userOrdersController.orderPaymentDetails(OrderDataModel(
       paymentAmount: orderPriceController.text,
       productsImage: widget.data['Image'],
       productsName: orderNameController.text,
@@ -62,6 +69,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       productsType: orderTypeController.text,
     ));
   }
+
   void _handlePaymentError(PaymentFailureResponse response) {
     print('Payment failed');
     Fluttertoast.showToast(
@@ -71,6 +79,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       textColor: Colors.red,
     );
   }
+
   void _handleExternalWallet(ExternalWalletResponse response) {
     print('Payment Successfully with Wallet');
     Fluttertoast.showToast(
@@ -79,20 +88,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
       fontSize: 40,
       textColor: Colors.green,
     );
-    _orderController.orderPaymentDetails(OrderDataModel(
-      paymentAmount: orderPriceController.text,
-      productsImage: widget.data['Image'],
-      productsName: orderNameController.text,
-      productsFabric: orderFabricController.text,
-      productsSize: orderSizeController.text,
-      productsPrice: orderPriceController.text,
-      productsType: orderTypeController.text,
-    ));
   }
+
   void payOrderAmount() {
     var options = {
       'key': 'rzp_test_8q9EoCx5zdsxNX',
-      'amount': (int.parse(orderPriceController.text) * 100).toString(),
+      'amount': (double.parse(orderPriceController.text) * 100).toInt(),
       'name': 'Ali',
       'description': 'Description for payment',
       'timeout': 60,
@@ -114,7 +115,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
       body: Card(
         child: Column(
           children: [
-            Image.network(widget.data['Image'],height: 300,width: 350,fit: BoxFit.cover,),
+            Image.network(
+              widget.data['Image'],
+              height: 300,
+              width: 350,
+              fit: BoxFit.cover,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -130,50 +136,45 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ],
             ),
             Text(widget.data['Type'] ?? "Type"),
-             Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                IconButton(onPressed: (){}, icon: Icon(Icons.share)),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.share)),
                 IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isFavorite = !isFavorite;
-                    });
-                  },
-                  icon: isFavorite ? InkWell(
-                    onTap: (){
+                    onPressed: () {
                       setState(() {
                         isFavorite = !isFavorite;
-
+                        if (isFavorite) {
+                          _userFavoriteListController.userAddFavoriteList(
+                              AddFavouritesDataModel(
+                                  productsImage: widget.data['Image'],
+                                  productsFabric: widget.data['Fabric'],
+                                  productsType: widget.data['Type'],
+                                  productsSize: widget.data['Size'],
+                                  productsPrice: widget.data['Price'],
+                                  productsName: widget.data['Name'],
+                                  isFavorite: isFavorite));
+                        } else {
+                          _userFavoriteListController.userRemoveFromFavoriteList(widget.data['addCartId']);
+                        }
                       });
                     },
-                      child: const Icon(Icons.favorite,color: Colors.red,))
-
-                      : InkWell(
-                    onTap: (){
-                      setState(() {
-                        isFavorite = !isFavorite;
-
-                      });
-                    },
-                      child: const Icon(Icons.favorite_border))
-                )
-
+                    icon: isFavorite
+                        ? const Icon(Icons.favorite, color: Colors.red)
+                        : const Icon(Icons.favorite_border)),
               ],
             ),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 view.elevatedButton('Add to cart', onPressed: () {
-                  _addToCartController.addToCart(AddToCartDataModel(
-                    productsName: orderNameController.text,
-                    productsPrice: orderPriceController.text,
-                    productsSize: orderSizeController.text,
-                    productsType: orderTypeController.text,
-                    productsFabric: orderFabricController.text,
-                    productsImage: widget.data['Image']
-                  ));
+                  _userAddToCartController.userAddToCart(AddToCartDataModel(
+                      productsName: orderNameController.text,
+                      productsPrice: orderPriceController.text,
+                      productsSize: orderSizeController.text,
+                      productsType: orderTypeController.text,
+                      productsFabric: orderFabricController.text,
+                      productsImage: widget.data['Image']));
                 }),
                 view.elevatedButton('Buy now', onPressed: () {
                   view.bottomSheet(
@@ -182,42 +183,43 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
-                          children: [
+                            children: [
                             view.sizedBox(height: 25),
-                            view.textFormField(
-                              controller: orderNameController,
-                              labelText: 'Products Desc',
-                              enabled: false,
-                            ),
-                            view.sizedBox(height: 15),
-                            view.textFormField(
-                              controller: orderPriceController,
-                              labelText: 'Products Price',
-                              enabled: false,
-                            ),
-                            view.sizedBox(height: 15),
-                            view.textFormField(
-                              controller: orderFabricController,
-                              labelText: 'Products Fabric',
-                              enabled: false,
-                            ),
-                            view.sizedBox(height: 15),
-                            view.textFormField(
-                              controller: orderSizeController,
-                              labelText: 'Products Size',
-                              enabled: false,
-                            ),
-                            view.sizedBox(height: 15),
-                            view.textFormField(
-                              controller: orderTypeController,
-                              labelText: 'Products Type',
-                              enabled: false,
-                            ),
-                            view.sizedBox(height: 35),
-                            view.elevatedButton('Buy Now', onPressed: () {
-                              payOrderAmount();
-                            }),
-                            view.sizedBox(height: 35),
+                        view.textFormField(
+                          controller: orderNameController,
+                          labelText: 'Products Desc',
+                          enabled: false,
+                        ),
+                        view.sizedBox(height: 15),
+                        view.textFormField(
+                          controller: orderPriceController,
+                          labelText: 'Products Price',
+                          enabled: false,
+                        ),
+                        view.sizedBox(height: 15),
+                        view.textFormField(
+                          controller: orderFabricController,
+                          labelText: 'Products Fabric',
+                          enabled: false,
+                        ),
+                        view.sizedBox(height: 15),
+                        view.textFormField(
+                          controller: orderSizeController,
+                          labelText: 'Products Size',
+                          enabled: false,
+                        ),
+                        view.sizedBox(height: 15),
+                        view.textFormField(
+                          controller: orderTypeController,
+                          labelText: 'Products Type',
+                          enabled: false,
+                        ),
+                        view.sizedBox(height: 35),
+                        view.elevatedButton('Buy Now', onPressed: () {
+                          payOrderAmount();
+                        }),
+                        view.sizedBox(height: 30)
+
                           ],
                         ),
                       ),
